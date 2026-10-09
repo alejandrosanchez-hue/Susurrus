@@ -322,6 +322,14 @@ html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 .lenis.lenis-stopped{overflow:hidden}
 
+/* ---------- story intro: the story name unfolds from a bar on paper, then dissolves into the page ---------- */
+.sintro{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:var(--paper);cursor:default}
+.sintro h2{margin:0;display:flex;align-items:center;gap:0;font-weight:500;font-size:clamp(30px,2.8vw,52px);line-height:1;letter-spacing:.04em;color:var(--ink)}
+.sintro .sl,.sintro .sr{display:inline-flex}
+.sintro .tl>i{transition-duration:1s}
+.sintro .sbar{display:block;width:max(1.5px,.045em);height:1em;background:currentColor;transform:scaleY(0);transition:transform .8s cubic-bezier(.33,0,.15,1) .2s}
+.sintro.t-in .sbar{transform:none}
+
 /* ---------- phone: Figma 402px mobile frames ---------- */
 @media (max-width:760px){
   :root{--nav-h:52px;--g:8px;--gap:8px;--sec:80px;--sec-lg:80px;--head:24px;--t-xs:8px;--t-md:14px;--t-lg:24px}
@@ -596,7 +604,7 @@ function homeView(){
 }
 
 /* Stories wheel: three stacked copies of the grid; the middle one is the real one, the outer two make the loop seamless. */
-const loopHTML = () => `<div class="loop"><div class="track">${[0, 1, 2].map(i => `<div class="grid"${i === 1 ? '' : ' aria-hidden="true" inert'}>${gridHTML()}</div>`).join('')}</div></div>`;
+const loopHTML = () => `<div class="loop"><div class="track">${[0, 1, 2].map(i => `<div class="grid"${i === 1 ? '' : ' aria-hidden="true" data-copy'}>${gridHTML()}</div>`).join('')}</div></div>`;
 
 function plpView(){
   return `
@@ -722,7 +730,7 @@ function render(route){
   if (route === 'naples') storyIntro('Naples');
 }
 
-/* letters slide out of their masks from the centre, as in the home intro; then the paper dissolves */
+/* same choreography as the home intro: a thin bar rises at the centre, the letters open out of it one by one, then the paper dissolves */
 function storyIntro(title){
   if (reduce.matches) return;
   document.querySelectorAll('.sintro').forEach(n => n.remove());
@@ -730,19 +738,20 @@ function storyIntro(title){
   root.classList.add('intro-on');
   const box = document.createElement('div');
   box.className = 'sintro'; box.setAttribute('aria-hidden', 'true');
-  const L = [...title], mid = (L.length - 1) / 2;
-  box.innerHTML = `<h2><span class="tw">${L.map((ch, i) => `<span class="tl"><i style="--from:${i < mid ? '' : '-'}110%;--d:${Math.round(Math.abs(i - mid) * 110 + 250)}ms">${ch}</i></span>`).join('')}</span></h2>`;
+  const L = [...title.toUpperCase()], cut = Math.ceil(L.length / 2);
+  const left = L.slice(0, cut), right = L.slice(cut);
+  const letter = (ch, side, k) => `<span class="tl"><i style="--from:${side === 'l' ? '' : '-'}115%;--d:${400 + k * 150}ms">${ch}</i></span>`;
+  box.innerHTML = `<h2><span class="sl">${left.map((c, i) => letter(c, 'l', left.length - 1 - i)).join('')}</span><span class="sr">${right.map((c, i) => letter(c, 'r', i)).join('')}</span></h2>`;
   document.body.appendChild(box);
   requestAnimationFrame(() => requestAnimationFrame(() => box.classList.add('t-in')));
   let done = false;
   const exit = () => {
     if (done) return; done = true;
     root.classList.remove('intro-on');
-    box.animate([{opacity:1}, {opacity:0}], {duration:1200, easing:'cubic-bezier(.4,0,.2,1)', fill:'forwards'}).finished.then(() => box.remove());
+    box.animate([{opacity:1}, {opacity:0}], {duration:1300, easing:'cubic-bezier(.4,0,.2,1)', fill:'forwards'}).finished.then(() => box.remove());
   };
   const t = setTimeout(exit, 2900);
   box.addEventListener('click', () => { clearTimeout(t); exit(); });
-  addEventListener('wheel', function w(){ clearTimeout(t); exit(); removeEventListener('wheel', w); }, {passive:true});
 }
 
 let entering = true;
@@ -816,6 +825,7 @@ function bindView(){
     });
   }
   view.querySelectorAll('.loop').forEach(l => initLoop(l, !!l.closest('#plp')));
+  view.querySelectorAll('[data-copy] button').forEach(el => el.tabIndex = -1);
   revealImages();
   splitTitles();
   revealBlocks();
@@ -1133,7 +1143,8 @@ function fold(svg, {duration = 700, step = 110} = {}){
   const skip = () => { clearTimeout(t); exit(); };
   box.addEventListener('click', skip);
   addEventListener('keydown', skip, {once:true});
-  addEventListener('wheel', skip, {once:true, passive:true});
+  // ignore trackpad momentum left over from before the page loaded
+  setTimeout(() => addEventListener('wheel', skip, {once:true, passive:true}), 1200);
 })();
 })();
 </script>
