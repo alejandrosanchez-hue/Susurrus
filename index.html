@@ -271,8 +271,9 @@ html.intro-on .hero img{animation-play-state:paused}
 .board img{display:block;width:100%;height:auto;aspect-ratio:1920/1052;-webkit-mask-image:linear-gradient(to bottom,transparent,#000 9%);mask-image:linear-gradient(to bottom,transparent,#000 9%)}
 .nextp{display:grid;gap:clamp(32px,3.125vw,60px);cursor:pointer}
 .nextp .ph{aspect-ratio:1856/1080}
-.nextp .ph img{opacity:.3;transition:opacity 1.2s ease}
-.nextp:hover .ph img{opacity:.45}
+.nextp .ph img{opacity:calc(.3 + var(--hold,0) * .7);transition:opacity 1.2s ease}
+.nextp.holding .ph img{transition:opacity .25s linear}
+.nextp:not(.holding):hover .ph img{opacity:.45}
 .dhero{display:grid;gap:clamp(40px,4vw,80px);padding-top:calc(var(--nav-h) + clamp(64px,8.33vw,160px))}
 .locrow{display:flex;flex-wrap:wrap;column-gap:clamp(24px,6.25vw,120px);row-gap:10px;padding:0 var(--g);font-size:var(--t-xs);line-height:1;letter-spacing:.02em;text-transform:uppercase;min-height:16px}
 .locrow button{opacity:.3;text-transform:uppercase;transition:opacity .35s}
@@ -466,6 +467,14 @@ html.lenis,html.lenis body{height:auto}
 
 /* every image that is not full-bleed shares the same corner radius */
 .marco .frame,.n-top .frame,.n-band .frame,.split .inner img,.mount img{border-radius:var(--rad)}
+
+/* dwell at the end of a page: a hairline fills while you stay, then the next page arrives */
+.hold{display:block;width:clamp(72px,6vw,120px);height:1px;margin:4px auto 0;background:color-mix(in srgb,currentColor 18%,transparent);overflow:hidden;opacity:0;transition:opacity .6s ease}
+.hold i{display:block;height:100%;background:currentColor;transform-origin:0 50%;transform:scaleX(var(--hold,0))}
+.holding .hold{opacity:1}
+.tail{position:relative}
+.tail>.hold,.nextp>.hold{position:fixed;left:0;right:0;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:60;margin:0 auto;color:#fff;mix-blend-mode:difference}
+.pveil{position:fixed;inset:0;z-index:120;background:var(--paper);pointer-events:none;opacity:0}
 </style></head><body>
 
 <header class="nav" aria-label="Main">
@@ -642,6 +651,7 @@ function homeView(){
     <header class="sh"><div class="tt"><p class="eyebrow">Scroll down</p><h2>Stories</h2></div></header>
   </div>
   <section class="plp screen tail" id="tail" aria-label="Stories">
+    <span class="hold" aria-hidden="true"><i></i></span>
     ${filtersHTML()}
     ${loopHTML()}
   </section>`;
@@ -781,6 +791,7 @@ function storyView(s){
   ${s.id === 'naples' ? naplesBody() : s.id === 'palm-beach' ? palmBody() : draftBody(s)}
   <section class="nextp" id="teaser" data-go="${next.id}" style="margin-top:var(--sec-lg);padding-bottom:var(--g)">
     <header class="sh"><div class="tt"><p class="eyebrow">Scroll down</p><h2>${next.name}</h2></div></header>
+    <span class="hold" aria-hidden="true"><i></i></span>
     <div class="media">${ph(nextImg, `Opening image of the ${next.name} story`)}</div>
   </section>`;
 }
@@ -889,6 +900,7 @@ function revealImages(){
 function bindView(){
   quoteEls = [...view.querySelectorAll('[data-quote]')].map(el => ({el, words:[...el.querySelectorAll('.w')], lit:+(el.dataset.lit || .45)}));
   sketches = [...view.querySelectorAll('.sk')];
+  cancelHold();
   teaser = document.getElementById('teaser');
   tail = document.getElementById('tail');
   bar = document.getElementById('nextbar');
@@ -1105,12 +1117,43 @@ function onScroll(){
     tail.style.setProperty('--p', pr.toFixed(3));
     veil.style.opacity = (pr * pr * (3 - 2 * pr)).toFixed(3);
   } else veil.style.opacity = 0;
-  if (tail && down && (tail.getBoundingClientRect().top <= 2 || atEnd)) go('stories', {seamless: true});
-  /* End of a story: the teaser is the next story's opening screen. */
-  if (teaser && down && (teaser.getBoundingClientRect().top <= 2 || atEnd)) {
-    const next = STORIES[(STORIES.indexOf(byId[current]) + 1) % STORIES.length];
+  /* End of Home / end of a story: nothing happens at once. Stay there for a moment and the next page arrives. */
+  if (tail && (tail.getBoundingClientRect().top <= 2 || atEnd)) armHold(tail, () => go('stories', {seamless: true}));
+  else if (teaser && (teaser.getBoundingClientRect().top <= 2 || atEnd)) armHold(teaser, nextStory);
+  else cancelHold();
+}
+const HOLD_MS = 2200;
+let hold = null;
+function armHold(el, fire){
+  if (hold && hold.el === el) return;
+  cancelHold();
+  const t0 = performance.now(), h = hold = {el, raf:0};
+  el.classList.add('holding');
+  const tick = now => {
+    if (hold !== h) return;
+    const p = Math.min(1, (now - t0) / HOLD_MS);
+    el.style.setProperty('--hold', (p * p * (3 - 2 * p)).toFixed(3));
+    if (p < 1) { h.raf = requestAnimationFrame(tick); return; }
+    hold = null; fire();
+  };
+  h.raf = requestAnimationFrame(tick);
+}
+function cancelHold(){
+  if (!hold) return;
+  cancelAnimationFrame(hold.raf);
+  hold.el.classList.remove('holding'); hold.el.style.setProperty('--hold', 0);
+  hold = null;
+}
+/* story → next story: the page dissolves into paper, the next story's title intro rises out of it */
+function nextStory(){
+  const next = STORIES[(STORIES.indexOf(byId[current]) + 1) % STORIES.length];
+  if (reduce.matches || lock) { go(next.id); return; }
+  const v = document.createElement('div'); v.className = 'pveil'; document.body.append(v);
+  v.animate([{opacity:0}, {opacity:1}], {duration:1000, easing:'cubic-bezier(.4,0,.2,1)', fill:'forwards'}).finished.then(() => {
     go(next.id);
-  }
+    if (document.querySelector('.sintro')) requestAnimationFrame(() => requestAnimationFrame(() => v.remove()));
+    else v.animate([{opacity:1}, {opacity:0}], {duration:900, easing:'cubic-bezier(.4,0,.2,1)', fill:'forwards'}).finished.then(() => v.remove());
+  });
 }
 let ticking = false;
 window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { onScroll(); ticking = false; }); } }, {passive: true});
