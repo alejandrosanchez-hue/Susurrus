@@ -1,10 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Susurrus</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style><title>Susurrus</title>
 <link rel="preload" href="fonts/IvarDisplay-Regular.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="fonts/IvarDisplay-Medium.otf" as="font" type="font/otf" crossorigin>
 <style>
@@ -12,6 +6,7 @@
 @font-face{font-family:"Ivar Display";src:url(fonts/IvarDisplay-Medium.otf) format("opentype");font-weight:500;font-style:normal;font-display:swap}
 /* Layout: one paper ground, 1920px Figma grid scaled fluidly; centered editorial heads over edge-to-edge imagery with a 32px gutter. */
 :root{
+  --rad:4px;
   --paper:#F6F1E4;       /* frame fill */
   --paper-fade:#EAE4D4;  /* textured band average */
   --ink:#000;
@@ -100,7 +95,7 @@ button{font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;
 .lead{margin:0;font-size:var(--t-md);line-height:1.1;letter-spacing:.02em;max-width:36em;text-wrap:balance}
 .sec{display:grid;gap:var(--head)}
 .media{padding-inline:var(--g)}
-.ph{border-radius:4px;overflow:hidden;background:var(--paper-fade)}
+.ph{border-radius:var(--rad);overflow:hidden;background:var(--paper-fade)}
 .ph img{width:100%;height:100%;object-fit:cover}
 .full .ph{aspect-ratio:1856/1080}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);padding-inline:var(--g)}
@@ -152,7 +147,7 @@ html.intro-on .hero img{animation-play-state:paused}
 .grid{row-gap:40px;margin-top:104px;position:relative}
 .cell{display:grid;gap:16px;grid-template-rows:16px auto;grid-row:var(--r);grid-column:var(--c);transition:opacity .45s}
 .cell .lbl{font-size:var(--t-xs);line-height:1;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
-.cell button{display:block;width:100%;aspect-ratio:367/215;overflow:hidden;border-radius:2px}
+.cell button{display:block;width:100%;aspect-ratio:367/215;overflow:hidden;border-radius:var(--rad)}
 .cell img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.6,.2,1)}
 .cell button:hover img{transform:scale(1.04)}
 .grid.dim .cell:not(.hl){opacity:.3}
@@ -234,7 +229,7 @@ html.intro-on .hero img{animation-play-state:paused}
 .team .sh h2{max-width:956px}
 .team-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:6px;row-gap:40px;padding-inline:var(--g)}
 .member{display:grid;gap:16px;margin:0}
-.member .ph{aspect-ratio:367/460;border-radius:0}
+.member .ph{aspect-ratio:367/460}
 .member figcaption{display:grid;gap:6px;font-size:var(--t-xs);line-height:1;letter-spacing:.02em}
 .member .nm{text-transform:uppercase}
 .member .rl{color:rgba(0,0,0,.4)}
@@ -300,10 +295,12 @@ html.intro-on .hero img{animation-play-state:paused}
 }
 
 /* ---------- titles: letters slide out of a clipping mask, centre first, like the wordmark ---------- */
-.tw{display:inline-block;white-space:nowrap}
-.tl{display:inline-block;overflow:hidden;vertical-align:top;padding-block:.12em;margin-block:-.12em}
-.tl>i{display:inline-block;font-style:normal;transform:translateX(var(--from));transition:transform 1.6s cubic-bezier(.6,0,.2,1) var(--d)}
-.t-in .tl>i{transform:none}
+.tln{display:flex;justify-content:center;white-space:pre}
+.th{display:block;overflow:hidden;padding-block:.12em;margin-block:-.12em}
+.th>span{display:block;opacity:.6;transition:transform 1.6s cubic-bezier(.6,0,.2,1),opacity 1.6s cubic-bezier(.6,0,.2,1)}
+.th.l>span{transform:translateX(101%)}
+.th.r>span{transform:translateX(-101%)}
+.t-in .th>span{transform:none;opacity:1}
 
 /* ---------- text: lines rise out of a clipping mask ---------- */
 .ln{display:block;overflow:hidden;padding-bottom:.14em;margin-bottom:-.14em}
@@ -325,8 +322,11 @@ html.lenis,html.lenis body{height:auto}
 /* ---------- story intro: the story name unfolds from a bar on paper, then dissolves into the page ---------- */
 .sintro{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:var(--paper);cursor:default}
 .sintro h2{margin:0;display:flex;align-items:center;gap:0;font-weight:500;font-size:clamp(30px,2.8vw,52px);line-height:1;letter-spacing:.04em;color:var(--ink)}
-.sintro .sl,.sintro .sr{display:inline-flex}
-.sintro .tl>i{transition-duration:1s}
+.sintro .sl,.sintro .sr{overflow:hidden;padding-block:.12em}
+.sintro .sl>span,.sintro .sr>span{display:inline-block;white-space:pre;opacity:.6;transition:transform 1.6s cubic-bezier(.6,0,.2,1) .35s,opacity 1.6s cubic-bezier(.6,0,.2,1) .35s}
+.sintro .sl>span{transform:translateX(101%)}
+.sintro .sr>span{transform:translateX(-101%)}
+.sintro.t-in .sl>span,.sintro.t-in .sr>span{transform:none;opacity:1}
 .sintro .sbar{display:block;width:max(1.5px,.045em);height:1em;background:currentColor;transform:scaleY(0);transition:transform .8s cubic-bezier(.33,0,.15,1) .2s}
 .sintro.t-in .sbar{transform:none}
 
@@ -352,7 +352,7 @@ html.lenis,html.lenis body{height:auto}
   .quote{gap:16px}
   .bio.wide{gap:2.2em}
   .studio-intro .lead-lg{max-width:318px}
-  .ph{border-radius:1px}
+  :root{--rad:1px}
   .full .ph,.studio-page .full .ph{aspect-ratio:386/226}
   .pair .ph,.pair-fig .ph{aspect-ratio:188/226}
   .fig{gap:8px}
@@ -368,7 +368,6 @@ html.lenis,html.lenis body{height:auto}
   .filters .col.open .locs{margin-top:8px}
   .grid{row-gap:8px;margin-top:40px}
   .grid .cell{grid-row:var(--mr);grid-column:var(--mc);grid-template-rows:8px auto;gap:4px}
-  .cell button{border-radius:0}
   .lbl .d{display:none}
   .lbl .mo{display:inline}
   .track{gap:8px}
@@ -420,9 +419,54 @@ html.lenis,html.lenis body{height:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .sk{transform:none!important}
 }
-</style>
-</head>
-<body>
+
+/* ---------- Naples (v2) ---------- */
+.n-top{display:grid;place-items:center;min-height:100svh;padding:calc(var(--g) + 72px) var(--g) clamp(40px,4vw,72px)}
+.n-in{--w:min(1240px,100%,calc((100svh - 300px) * 1.467));width:var(--w);display:grid;justify-items:center;gap:clamp(16px,1.5vw,28px)}
+.n-meta{width:100%;margin:0 0 calc(clamp(16px,1.5vw,28px) * -.5);display:flex;justify-content:space-between;font-size:var(--t-md);line-height:1}
+.n-meta span:first-child{font-weight:500;text-transform:uppercase}
+.n-top .frame{width:100%;height:auto;aspect-ratio:1059/722}
+.n-top .sh{gap:8px;margin-top:clamp(8px,1vw,20px)}
+.n2 .blk{gap:clamp(56px,6.25vw,120px)}
+.n2 .sh .eyebrow{text-transform:none;letter-spacing:.04em}
+.n2 .sh .lead{max-width:21em}
+.n2 .grp{display:grid;gap:clamp(32px,3.125vw,60px)}
+.bleed .ph{border-radius:0;aspect-ratio:var(--ar)}
+.n2 .duo{padding-inline:clamp(16px,6.5vw,125px)}
+.n2 .duo figure{gap:0}
+.mat{padding-inline:var(--g);display:grid;place-items:center}
+.mat img{width:min(1745px,100%);height:auto}
+.n-band{display:grid;place-items:center;padding:clamp(48px,6.5vw,125px) var(--g)}
+.n-band .frame{width:min(1000px,100%);height:auto;aspect-ratio:1059/722}
+.mount{width:min(1185px,100%);padding:clamp(10px,1.05vw,20px);background:#eeeae1;border-radius:var(--rad);box-shadow:0 0 0 1px rgba(80,70,50,.08),0 1px 3px rgba(60,50,30,.18),inset 0 1px 0 rgba(255,255,255,.7)}
+.mount img{display:block;width:100%;height:auto;aspect-ratio:746/466;object-fit:cover;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+.busts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,.8vw,16px);padding-inline:clamp(16px,5vw,96px)}
+.bp{display:contents}
+.busts .ph{aspect-ratio:268/335;background:#000}
+.busts .ph img{object-fit:contain}
+.media.mid{width:min(1190px,62vw);margin-inline:auto;padding:0}
+.media.mid .ph{aspect-ratio:779/379}
+.media.wide{padding-inline:clamp(16px,2.7vw,52px)}
+.media.wide .ph{aspect-ratio:1191/700}
+.media.small{width:min(550px,28.6vw);margin-inline:auto;padding:0}
+.media.small .ph{aspect-ratio:360/289}
+.gsk{display:block;width:min(770px,39vw);height:auto;margin:clamp(8px,1.5vw,30px) auto 0}
+@media (max-width:760px){
+  .n-top{min-height:auto;padding-top:96px}
+  .n-in{--w:100%}
+  .n-meta{font-size:13px}
+  .busts{grid-template-columns:1fr 1fr;gap:8px;padding-inline:var(--g)}
+  .n2 .duo{padding-inline:var(--g)}
+  .media.mid{width:calc(100% - 2 * var(--g))}
+  .media.wide{padding-inline:var(--g)}
+  .media.small{width:58%}
+  .gsk{width:72%}
+  .n-band{padding-block:40px}
+}
+
+/* every image that is not full-bleed shares the same corner radius */
+.marco .frame,.n-top .frame,.n-band .frame,.split .inner img,.mount img{border-radius:var(--rad)}
+</style></head><body>
 
 <header class="nav" aria-label="Main">
   <a class="logo" href="#home" data-go="home" aria-label="Susurrus, home">
@@ -642,50 +686,64 @@ const QUOTE = `…sat on the sandy shelf looking out to sea / intensity in the s
 const quoteHTML = () => `<section class="quote" data-quote><p>${QUOTE.split(' / ').map(line => line.split(' ').map(w => `<span class="w">${w}</span>`).join(' ')).join('<br>')}</p><p class="eyebrow">Mark Jon Junor</p></section>`;
 
 function naplesBody(){
+  const bleed = (src, alt, ar) => `<div class="bleed" style="--ar:${ar}">${ph(src, alt)}</div>`;
   return `
-  <section class="hero"><img src="${I('p_atrium.webp')}" alt="Atrium of the Ritz Carlton Residences Naples: fluted timber screens, marble reception and a skylit mezzanine with olive trees" style="view-transition-name:story-img"></section>
-  <div class="pdp2">
+  <section class="n-top tex">
+    <div class="n-in">
+      <p class="n-meta"><span>Story</span><span>The Estuary Villa</span></p>
+      <img class="frame" src="${I('n_marco_atrium.webp')}" alt="Pen sketch of the atrium: curved walls of vertical fins around a reception desk, framed in a bevelled paper mount" decoding="async">
+      <header class="sh"><div class="tt"><p class="eyebrow">Ritz Carlton Residences</p><h2>Naples</h2></div></header>
+    </div>
+  </section>
+  <div class="pdp2 n2">
     <section class="blk">
-      ${fullT('Ritz Carlton Residences', 'Naples', I('p_lounge.webp'), 'Lobby lounge with olive trees in clay pots under a timber-beamed skylight')}
-      ${reveal('The time moves slowly, clouds come floating over your head. Mother Nature in its purest, simple treasures. Present day elements fill your life with joy and peace. The rough texture of rope, the fluidity of sand, the softness of the basket weaving and the endless intriguing curvature of sea shells… Wake up and live exquisite each day, surround yourself with beauty and do something really enjoyable in order to show that every second is special.', 'Coastal lifestyle', .42)}
-    </section>
-    <section class="blk tight">
-      ${marco('Design development', 'The atrium', 'n_marco_atrium.webp', 'Pen sketch of the atrium: curved walls of vertical fins around a reception desk', 'Atrium and Lobby Lounge. Building one.', 'md')}
-      <div class="media" style="padding-block:32px 0">${ph(I('n_spiral.webp'), 'Atrium with a sculptural spiral stair, timber-lined walls and a moss-toned rug')}</div>
-    </section>
-    <section class="blk" style="gap:clamp(32px,3.125vw,60px)">
-      ${fullT('Natural sophistication', 'Lobby lounge', I('p_lounge.webp'), 'Lobby lounge with olive trees, ochre leather armchairs and a sheer-curtained window wall')}
-      <p class="loose-t">Relaxed and elegant atmosphere. Earthy and maritime at the same time. Indoors and outdoors merge. The nature comes in, the home escapes out. Breeze, wood scent and shadows, moving…</p>
-    </section>
-    <section class="blk">
-      ${marco('Rooted in nature', 'Cinema room', 'n_marco_canopy.webp', 'Pen sketch of a vaulted canopy over rows of seats', 'Mangrove geometry as shelter', 'md')}
-      ${full(I('p_theater.webp'), 'Private cinema with ochre leather recliners under ribbed timber vaults')}
-      ${reveal('Mangrove roots that arch high over the water are a distinctive feature of the Mangroves in the Everglades. The complex network of roots that extend from mangrove trees into the water creates a structure known as a “mangrove forest.” These forests are characterized by their dense canopy, which provides shade and protection from the sun, as well as their intricate root systems, which provide shelter, habitat and cozy space for a variety of plants and animals to live.', 'Mark Jon Junor', .38)}
-      ${duo([[I('p_mangrove.webp'), 'Mangrove roots reaching into green estuary water', '', 'mul'], [I('p_river.webp'), 'Aerial view of a meandering river through dense forest']], '820/920')}
+      ${head('01', 'Legendary', 'Rooted in the heritage of the brand, the design embodies a legacy of exceptional hospitality and enduring distinction.')}
+      ${full(I('p_atrium.webp'), 'Atrium of the Ritz Carlton Residences Naples: fluted timber screens, marble reception and a skylit mezzanine with olive trees')}
+      ${reveal('The sinuous path of the Naples estuary, where water and land gently intertwine, inspired the design of the lobby. Its graceful curves, ever-changing light and serene rhythm evoke a sense of movement and connection, creating a space that welcomes with the calm and beauty of nature.', 'Physical context')}
+      ${bleed(I('n2_aerial.webp'), 'Aerial view of the Naples estuary: turquoise water winding between white sand banks and mangroves', '1260/545')}
     </section>
     <section class="blk">
-      ${fullT('A place for adventure', 'Restaurant bar', I('n_bar.webp'), 'Restaurant bar lined in mahogany with navy director chairs and framed nautical charts')}
-      ${marco('A place for adventure', 'Enjoy freedom', 'n_marco_canopy.webp', 'Pen sketch of a vaulted canopy', 'Explore what life is like aboard the World’s finest “runabouts”', 'lg')}
-      <div class="media">${duo([[I('n_sail.webp'), 'Black and white photograph of a sailor on the bow of a yacht heading into the sun', 'Present day elements fill your life with joy and peace. The rough texture of rope, the fluidity of sand, the softness of the basket weaving and the endless intriguing curvature of sea shells…'], [I('n_shoes.webp'), 'A man in a navy sweater and linen shorts carrying leather boat shoes on a harbour', 'Present day elements fill your life with joy and peace. The rough texture of rope, the fluidity of sand, the softness of the basket weaving and the endless intriguing curvature of sea shells…']], '788/982')}</div>
-      ${full(I('n_bar.webp'), 'Restaurant bar lined in mahogany with navy director chairs')}
-      <p class="loose-t">Vintage speedboats have everything you need to make your experience very fashionable and exclusive. Hulls and planking entirely made with Mahogany, brass ties and winches and leather upholstered seatings all throughout.</p>
+      ${head('02', 'Gracious', 'The design welcomes with ease, balancing elegance and comfort in every detail.')}
+      <div class="grp">
+        ${duo([[I('n2_swim.webp'), 'Black and white photograph of a swimmer diving through sunlit water'], [I('n2_shore.webp'), 'Black and white photograph of a woman in a linen shirt walking through the surf']], '536/696')}
+        <p class="loose-t">Coastal lifestyle gently shapes the social insight, inspiring a way of living that is both relaxed and refined. It brings people together, encourages connection, and creates a sense of belonging that feels effortless.</p>
+      </div>
+      ${bleed(I('n_spiral.webp'), 'Atrium with a sculptural spiral stair, timber-lined walls, marble reception and a moss-toned rug', '1260/742')}
     </section>
     <section class="blk">
-      ${fullT('Health republic', 'Fitness area', I('n_gym.webp'), 'Gym with coffered timber ceiling, backlit shelving and classical busts')}
-      ${reveal('The fitness center reimagines the energy of movement within the serene elegance of a Mediterranean mansion. Light-filled, the space features large openings, textured wall coverings, and monochromatic flooring that evoke the timeless charm of coastal villas. Warm wood accents, wrought iron details, and linen-inspired finishes soften the atmosphere, creating a balance. This is a gym experience redefined: well-being, beauty, and a deep sense of calm.', 'Mark Jon Junor', .4)}
-      <div class="media">${duo([[I('n_bust.webp'), 'Marble bust of a young man on black'], [I('n_torso.webp'), 'Classical marble torso on black'], [I('n_torso2.webp'), 'Black and white study of a weathered marble back']], '512/650', 3)}</div>
-      ${full(I('n_cardio.webp'), 'Cardio room with treadmills and bikes facing palm trees through tall windows')}
+      ${head('03', 'Timeless', 'The design transcends time, combining classical principles with a contemporary sensibility.')}
+      <div class="mat"><img src="${I('n2_mat1.webp')}" alt="Material board: pale oak, white onyx, dark marble, espresso leather, terrazzo, calacatta marble, oak slats, ochre leather and a sprig of olive" decoding="async"></div>
+      <div class="n-band tex"><div class="mount"><img src="${I('n2_villa.webp')}" alt="Colonnaded hall of a Mediterranean villa with a coffered timber ceiling, statues in niches and a crystal chandelier" decoding="async"></div></div>
+      ${reveal('The Mediterranean Villa, with its monumentality and timeless elegance, served as a historical insight, inspiring a design that reflects the architectural heritage of Naples. Its harmony, proportions and symmetry continue to inform the character of the lobby lounge, evoking a sense of refinement and classic luxury.', 'Historical context')}
+      ${full(I('p_lounge.webp'), 'Lobby lounge with olive trees in clay pots, ochre leather armchairs and a timber-beamed skylight')}
     </section>
     <section class="blk">
-      ${fullT('A creative space', 'Media game room', I('p_games.webp'), 'Media and games room with a billiard table and a perforated brass ceiling')}
-      <div class="split tex"><div class="ph">${`<img src="${I('n_tunnel.webp')}" alt="A channel through a tunnel of mangrove trees" decoding="async">`}</div>
-        <div class="sc"><div class="inner"><img src="${I('n_marco_games.webp')}" alt="Pen sketch of the games room framed in a bevelled paper mount" decoding="async"><h3>Protected by nature</h3><p>The leaves of mangroves are typically green and glossy, and are often oblong or oval in shape. These canopies provide shade and protection from the sun and other elements. The dense foliage helps to create a cooler, more humid environment.</p></div></div></div>
+      ${head('04', 'Inspiring', 'The design evokes curiosity and wonder, creating a sense of discovery in every experience.')}
+      <div class="grp">
+        <div class="busts">
+          <div class="bp">${ph(I('n_bust.webp'), 'Marble bust of a young man on black')}${ph(I('n2_venus.webp'), 'Draped classical female torso in marble on black')}</div>
+          <div class="bp">${ph(I('n_torso.webp'), 'Classical marble male torso on black')}${ph(I('n2_bust2.webp'), 'Marble bust of a woman with braided hair on black')}</div>
+        </div>
+        <p class="loose-t">Classical art offers a timeless source of inspiration for the Fitness Center, celebrating the harmony of body and mind and the enduring pursuit of well-being.</p>
+      </div>
+      ${bleed(I('n_gym.webp'), 'Fitness center with a coffered timber ceiling, backlit shelving with classical busts and a marble fireplace', '1260/740')}
     </section>
-    <section class="blk" style="gap:clamp(48px,6.25vw,120px)">
-      ${fullT('First class ambiance', 'The Vanderbilt club', I('n_club.webp'), 'Club lounge with tufted black leather sofas, rust velvet armchairs and a glowing ceiling of alabaster panels')}
-      ${reveal('Exclusive and sophisticated spaces offering flexibility to just relax or host private events with your favourite chef. This one of a kind club offers privacy atmosphere combined with exceptional culinary experiences enjoying the views to the lagoon. Intense Colors as the signature of the taste of the Vanderbilts but in a contemporary interpretation, meeting today’s residents demands.', 'A heaven for exclusivity seekers', .5)}
+    <section class="blk">
+      ${head('05', 'Emotional', 'The design creates a meaningful connection, allowing residents to feel a sense of belonging, wellbeing and daily inspiration.')}
+      <div class="media mid">${ph(I('n_tunnel.webp'), 'A channel of still water through a tunnel of mangrove trees')}</div>
+      <div class="grp">
+        <div class="n-band tex"><img class="frame" src="${I('n_marco_canopy.webp')}" alt="Pen sketch of the cinema: a vaulted canopy of ribs over rows of seats, framed in a bevelled paper mount" decoding="async"></div>
+        <div class="media wide">${ph(I('p_theater.webp'), 'Private cinema with ochre leather recliners under ribbed timber vaults')}</div>
+      </div>
+      ${reveal('The surrounding mangrove landscape inspired the design of the Games Room, where the spirit of the place is reimagined above. In the ceiling, an interpretation of the mangroves’ expansive canopies creates a sense of shelter and wonder, bringing the beauty and quiet energy of the natural landscape into the interior and inviting connection, play and discovery.', 'Emotional connection')}
+      <div class="grp">
+        <div class="media small">${ph(I('p_roots.webp'), 'Mangrove trees standing on slender white roots above the water')}</div>
+        <img class="gsk" src="${I('n2_gsketch.webp')}" alt="Pen sketch of the games room ceiling as a canopy of branches over tables and seating" decoding="async">
+      </div>
+      ${bleed(I('p_games.webp'), 'Media and games room with a billiard table under a perforated brass ceiling that glows like a canopy', '1260/750')}
+      <p class="loose-t">A refined material palette brings the space to life, combining the warmth of natural wood and the quiet strength of quartzite with the soft tactility of felt, leather and linen.</p>
+      <div class="mat"><img src="${I('n2_mat2.webp')}" alt="Material board for the games room: quartzite, brown felt, ochre patterned textile, oak, leather, a playing card, dice and an eight ball" decoding="async"></div>
     </section>
-    <section class="board">${head('The Vanderbilt club', 'Material board')}<img src="${I('n_board.webp')}" alt="Material board: leathers in cognac and espresso, bronze-toned linen, dark oak, rust velvet, alabaster and dark marble, with a polaroid of a panelled library" decoding="async"></section>
   </div>`;
 }
 
@@ -762,7 +820,7 @@ function storyIntro(title){
   const L = [...title.toUpperCase()], cut = Math.ceil(L.length / 2);
   const left = L.slice(0, cut), right = L.slice(cut);
   const letter = (ch, side, k) => `<span class="tl"><i style="--from:${side === 'l' ? '' : '-'}115%;--d:${400 + k * 150}ms">${ch === ' ' ? '&nbsp;' : ch}</i></span>`;
-  box.innerHTML = `<h2><span class="sl">${left.map((c, i) => letter(c, 'l', left.length - 1 - i)).join('')}</span><span class="sr">${right.map((c, i) => letter(c, 'r', i)).join('')}</span></h2>`;
+  box.innerHTML = `<h2><span class="sl"><span>${left.join('')}</span></span><span class="sr"><span>${right.join('')}</span></span></h2>`;
   document.body.appendChild(box);
   requestAnimationFrame(() => requestAnimationFrame(() => box.classList.add('t-in')));
   let done = false;
@@ -856,7 +914,7 @@ function bindView(){
 
 /* ---------- body text by lines, images by mask ---------- */
 const LINE_SEL = '.sh .eyebrow,.sh .lead,.duo figcaption,.marco .cap,.loose-t,.reveal .txt,.reveal .eyebrow,.split h3,.split p,.bio p,.studio-intro .lead-lg,.studio-intro .eyebrow,.caps2 p,.cap1,.statement,.fig figcaption,.foot .tag,.member figcaption';
-const IMG_SEL = '.ph,.marco .frame,.split .inner img,.board img,.hero';
+const IMG_SEL = '.ph,.marco .frame,.n-band .frame,.mount,.mat img,.gsk,.split .inner img,.board img,.hero';
 let blockIO = null;
 const introDone = fn => { const t = () => document.documentElement.classList.contains('intro-on') ? setTimeout(t, 120) : fn(); t(); };
 function lineify(el){
@@ -905,21 +963,36 @@ function splitTitles(){
   if (titleIO) titleIO.disconnect();
   const hs = [...view.querySelectorAll('.sh h2')];
   if (reduce.matches || !hs.length) return;
+  const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   hs.forEach(h => {
     if (h.dataset.split) return;
     h.dataset.split = 1;
+    const orig = h.innerHTML;
     h.setAttribute('aria-label', h.textContent.replace(/\s+/g, ' ').trim());
-    // collect letters across text nodes, keeping <br>
+    // measure the rendered lines (respecting <br> and natural wrapping)
     const parts = [];
     h.childNodes.forEach(n => { if (n.nodeType === 3) parts.push(n.textContent); else if (n.nodeName === 'BR') parts.push('\n'); });
-    const letters = parts.join('').replace(/\n/g, '').replace(/\s/g, '').length, mid = (letters - 1) / 2;
-    let k = 0;
-    h.innerHTML = '<span aria-hidden="true">' + parts.map(t => t === '\n' ? '<br>' : t.split(/(\s+)/).map(w => /^\s+$/.test(w) || !w ? w : `<span class="tw">${[...w].map(ch => {
-      const i = k++, left = i < mid;
-      return `<span class="tl"><i style="--from:${left ? '' : '-'}110%;--d:${Math.round(Math.abs(i - mid) * 75)}ms">${ch}</i></span>`;
-    }).join('')}</span>`).join('')).join('') + '</span>';
+    h.innerHTML = parts.join('').split('\n').map(t => t.trim().split(/\s+/).filter(Boolean).map(w => `<span class="mw">${esc(w)}</span>`).join(' ')).join('<br>');
+    const lines = [];
+    let top = null;
+    h.querySelectorAll('.mw').forEach((w, i, all) => {
+      const brk = w.previousSibling && w.previousSibling.nodeName === 'BR';
+      if (top === null || brk || Math.abs(w.offsetTop - top) > 2) { lines.push([]); top = w.offsetTop; }
+      lines[lines.length - 1].push(w.textContent);
+    });
+    // each line opens from its centre: the two halves slide out from behind the middle, like the wordmark
+    h.innerHTML = '<span aria-hidden="true">' + lines.map(ws => {
+      const L = [...ws.join(' ')], cut = Math.ceil(L.length / 2);
+      return `<span class="tln"><span class="th l"><span>${esc(L.slice(0, cut).join(''))}</span></span><span class="th r"><span>${esc(L.slice(cut).join(''))}</span></span></span>`;
+    }).join('') + '</span>';
+    h._orig = orig;
   });
-  titleIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('t-in'); titleIO.unobserve(e.target); } }), {rootMargin:'0px 0px -12% 0px'});
+  titleIO = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const h = e.target; h.classList.add('t-in'); titleIO.unobserve(h);
+    // once open, give the title back its natural markup so it reflows freely
+    setTimeout(() => { if (h.isConnected && h._orig != null) { h.innerHTML = h._orig; h.removeAttribute('aria-label'); } }, 1750);
+  }), {rootMargin:'0px 0px -12% 0px'});
   hs.forEach(h => titleIO.observe(h));
 }
 
@@ -985,7 +1058,7 @@ function initLoop(loop, interactive){
 const veil = document.querySelector('.texveil');
 const navEl = document.querySelector('.nav');
 let navAcc = 0;
-const LIGHT_IMG = /sketch|ornament|dd_frame|p_drawing|p_stucco|p_villa|sk_|n_marco|n_board/;
+const LIGHT_IMG = /n2_mat|n2_gsketch|n2_villa|sketch|ornament|dd_frame|p_drawing|p_stucco|p_villa|sk_|n_marco|n_board/;
 function navTone(){
   navEl.querySelectorAll('.logo,.menu,.mbar').forEach(el => {
     if (!el.offsetWidth) return;
@@ -1085,38 +1158,47 @@ const EASE = 'cubic-bezier(.65,0,.25,1)';
 /* Split the wordmark once: every letter sits in its own clipping box. On reveal each letter slides into its box from the bar's side,
    one after another, moving outward from the bar. */
 let wmId = 0;
+/* After the bar, the two halves of the word slide out from behind it as clean blocks, with only a slight fade.
+   Each half is clipped at the edge of its nearest letter, so nothing ever overlaps the bar. */
 function wordmarkParts(svg){
   if (svg._wm) return svg._wm;
   const NS = 'http://www.w3.org/2000/svg';
   const paths = [...svg.querySelectorAll('path')], bb = paths.map(p => p.getBBox());
   const bi = bb.reduce((m, b, i) => b.width < bb[m].width ? i : m, 0), bar = bb[bi];
   const vb = svg.viewBox.baseVal, cx = bar.x + bar.width / 2, id = 'wm' + (++wmId);
-  const defs = document.createElementNS(NS, 'defs'); svg.insertBefore(defs, svg.firstChild);
-  const letters = paths.map((p, i) => i).filter(i => i !== bi).map(i => {
-    const b = bb[i], cp = document.createElementNS(NS, 'clipPath'), r = document.createElementNS(NS, 'rect');
-    cp.id = `${id}-${i}`;
-    r.setAttribute('x', b.x - .2); r.setAttribute('y', -4); r.setAttribute('width', b.width + .4); r.setAttribute('height', vb.height + 8);
+  const minX = Math.min(...bb.map(b => b.x)), maxX = Math.max(...bb.map(b => b.x + b.width));
+  const lEdge = Math.max(...bb.filter((b, i) => i !== bi && b.x < cx).map(b => b.x + b.width)) + .05;
+  const rEdge = Math.min(...bb.filter((b, i) => i !== bi && b.x >= cx).map(b => b.x)) - .05;
+  const defs = document.createElementNS(NS, 'defs');
+  defs.innerHTML = `<filter id="${id}f" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="0"/></filter>`;
+  svg.insertBefore(defs, svg.firstChild);
+  const mk = (side, x, w) => {
+    const cp = document.createElementNS(NS, 'clipPath'); cp.id = `${id}${side}`;
+    const r = document.createElementNS(NS, 'rect'); r.setAttribute('x', x); r.setAttribute('y', -20); r.setAttribute('width', w); r.setAttribute('height', vb.height + 40);
     cp.appendChild(r); defs.appendChild(cp);
-    const outer = document.createElementNS(NS, 'g'), inner = document.createElementNS(NS, 'g');
-    outer.setAttribute('clip-path', `url(#${cp.id})`); outer.appendChild(inner); svg.insertBefore(outer, paths[i]); inner.appendChild(paths[i]);
-    const left = b.x + b.width / 2 < cx;
-    return {el:inner, from:(left ? 1 : -1) * (b.width * 1.1 + 2), dist:Math.abs(b.x + b.width / 2 - cx), left};
-  });
-  // reveal order: per side, nearest to the bar first
-  const order = side => letters.filter(l => l.left === side).sort((x, y) => x.dist - y.dist);
-  order(true).forEach((l, k) => l.k = k); order(false).forEach((l, k) => l.k = k);
-  return svg._wm = {bar:paths[bi], letters, pc:(cx - vb.x) / vb.width * 100};
+    const outer = document.createElementNS(NS, 'g'); outer.setAttribute('clip-path', `url(#${id}${side})`);
+    const inner = document.createElementNS(NS, 'g');
+    outer.appendChild(inner); svg.appendChild(outer);
+    return inner;
+  };
+  const gl = mk('l', minX - 20, lEdge - (minX - 20)), gr = mk('r', rEdge, maxX + 20 - rEdge);
+  paths.forEach((p, i) => { if (i !== bi) (bb[i].x < cx ? gl : gr).appendChild(p); });
+  svg.appendChild(paths[bi]);
+  return svg._wm = {bar:paths[bi], gl, gr, fid:`url(#${id}f)`, blur:defs.querySelector('feGaussianBlur'), dl:lEdge - minX + 2, dr:maxX - rEdge + 2, pc:(cx - vb.x) / vb.width * 100};
 }
-function unfold(svg, {delay = 0, duration = 950, step = 140} = {}){
-  return wordmarkParts(svg).letters.map(l => l.el.animate(
-    [{transform:`translateX(${l.from}px)`}, {transform:'translateX(0)'}],
-    {duration, delay:delay + l.k * step, easing:'cubic-bezier(.6,0,.2,1)', fill:'both'}));
+function unfold(svg, {delay = 0, duration = 1600} = {}){
+  const w = wordmarkParts(svg), o = {duration, delay, easing:'cubic-bezier(.6,0,.2,1)', fill:'both'};
+  return [
+    w.gl.animate([{transform:`translateX(${w.dl}px)`, opacity:.6}, {transform:'translateX(0)', opacity:1}], o),
+    w.gr.animate([{transform:`translateX(${-w.dr}px)`, opacity:.6}, {transform:'translateX(0)', opacity:1}], o)
+  ];
 }
-function fold(svg, {duration = 700, step = 110} = {}){
-  const L = wordmarkParts(svg).letters, max = Math.max(...L.map(l => l.k));
-  return L.map(l => l.el.animate(
-    [{transform:'translateX(0)'}, {transform:`translateX(${l.from}px)`}],
-    {duration, delay:(max - l.k) * step, easing:'cubic-bezier(.6,0,.4,1)', fill:'both'}));
+function fold(svg, {duration = 800} = {}){
+  const w = wordmarkParts(svg), o = {duration, easing:'cubic-bezier(.55,0,.35,1)', fill:'both'};
+  return [
+    w.gl.animate([{transform:'translateX(0)', opacity:1}, {transform:`translateX(${w.dl}px)`, opacity:.6}], o),
+    w.gr.animate([{transform:'translateX(0)', opacity:1}, {transform:`translateX(${-w.dr}px)`, opacity:.6}], o)
+  ];
 }
 
 /* header logo: on hover it folds into the bar and opens again */
@@ -1129,7 +1211,7 @@ function fold(svg, {duration = 700, step = 110} = {}){
     running = fold(svg);
     try { await Promise.all(running.map(a => a.finished)); } catch (e) {}
     running.forEach(a => a.cancel());
-    running = unfold(svg, {delay:300, duration:1100, step:170});
+    running = unfold(svg, {delay:250, duration:1600});
     try { await Promise.all(running.map(a => a.finished)); } catch (e) {}
     running.forEach(a => a.cancel());
     running = null;
@@ -1150,7 +1232,7 @@ function fold(svg, {duration = 700, step = 110} = {}){
   anims.push(svg.animate([{transform:`translateX(${(50 - w.pc).toFixed(2)}%)`}, {transform:`translateX(${(50 - w.pc).toFixed(2)}%)`, offset:.45}, {transform:'translateX(0)'}], {duration:2400, easing:EASE, fill:'both'}));
   anims.push(w.bar.animate([{transform:'scaleY(0)', transformOrigin:'50% 50%'}, {transform:'scaleY(1)', transformOrigin:'50% 50%'}], {duration:800, delay:200, easing:'cubic-bezier(.33,0,.15,1)', fill:'both'}));
   // 2. the wordmark opens out of it
-  anims.push(...unfold(svg, {delay:1150, duration:1000, step:150}));
+  anims.push(...unfold(svg, {delay:1100, duration:1600}));
   // 3. paper and wordmark dissolve together into the photograph; the header arrives afterwards
   let done = false;
   const exit = () => {
@@ -1169,6 +1251,4 @@ function fold(svg, {duration = 700, step = 110} = {}){
 })();
 })();
 </script>
-
-</body>
-</html>
+</body></html>
