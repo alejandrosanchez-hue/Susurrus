@@ -438,7 +438,9 @@ html.lenis,html.lenis body{height:auto}
 .n2 .duo figure{gap:0}
 .mat{padding-inline:var(--g);display:grid;place-items:center}
 .mat img{width:min(1745px,100%);height:auto}
-.bandimg img{display:block;width:100%;height:auto;aspect-ratio:2000/1177}
+/* mounted pieces fit the screen whole: the image keeps its proportions and the paper continues to the sides */
+.bandimg{height:min(100svh,58.85vw);display:grid;justify-items:center;background:#e7e2d6 url(img/n2_paper.webp) repeat-x center/auto 100%;overflow:hidden}
+.bandimg img{display:block;height:100%;width:auto;max-width:100%;aspect-ratio:2000/1177}
 .busts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,.8vw,16px);padding-inline:clamp(16px,5vw,96px)}
 .bp{display:contents}
 .busts .ph{aspect-ratio:268/335;background:#000}
@@ -723,7 +725,7 @@ function naplesBody(){
     <section class="blk">
       ${head('03', 'Timeless', 'The design transcends time, combining classical principles with a contemporary sensibility.')}
       <div class="mat"><img src="${I('n2_mat1.webp')}" alt="Material board: pale oak, white onyx, dark marble, espresso leather, terrazzo, calacatta marble, oak slats, ochre leather and a sprig of olive" decoding="async"></div>
-      <div class="bandimg"><img src="${I('n2_villa.webp')}" alt="Colonnaded hall of a Mediterranean villa with a coffered timber ceiling, statues in niches and a crystal chandelier, set in a bevelled paper mount" decoding="async"></div>
+      <div class="bandimg"><img class="bi" src="${I('n2_villa.webp')}" alt="Colonnaded hall of a Mediterranean villa with a coffered timber ceiling, statues in niches and a crystal chandelier, set in a bevelled paper mount" decoding="async"></div>
       ${reveal('The Mediterranean Villa, with its monumentality and timeless elegance, served as a historical insight, inspiring a design that reflects the architectural heritage of Naples. Its harmony, proportions and symmetry continue to inform the character of the lobby lounge, evoking a sense of refinement and classic luxury.', 'Historical context')}
       ${full(I('p_lounge.webp'), 'Lobby lounge with olive trees in clay pots, ochre leather armchairs and a timber-beamed skylight')}
     </section>
@@ -742,7 +744,7 @@ function naplesBody(){
       ${head('05', 'Emotional', 'The design creates a meaningful connection, allowing residents to feel a sense of belonging, wellbeing and daily inspiration.')}
       <div class="media mid">${ph(I('n_tunnel.webp'), 'A channel of still water through a tunnel of mangrove trees')}</div>
       <div class="grp">
-        <div class="bandimg"><img src="${I('n2_canopy_band.webp')}" alt="Pen sketch of the cinema: a vaulted canopy of ribs over rows of seats, with notes reading upper canopy, above, below and lower trunks (cave), framed in a bevelled paper mount" decoding="async"></div>
+        <div class="bandimg"><img class="bi" src="${I('n2_canopy_band.webp')}" alt="Pen sketch of the cinema: a vaulted canopy of ribs over rows of seats, with notes reading upper canopy, above, below and lower trunks (cave), framed in a bevelled paper mount" decoding="async"></div>
         <div class="media wide">${ph(I('p_theater.webp'), 'Private cinema with ochre leather recliners under ribbed timber vaults')}</div>
       </div>
       ${reveal('The surrounding mangrove landscape inspired the design of the Games Room, where the spirit of the place is reimagined above. In the ceiling, an interpretation of the mangroves’ expansive canopies creates a sense of shelter and wonder, bringing the beauty and quiet energy of the natural landscape into the interior and inviting connection, play and discovery.', 'Emotional connection')}
