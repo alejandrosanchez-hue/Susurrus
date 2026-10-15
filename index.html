@@ -423,12 +423,13 @@ html.lenis,html.lenis body{height:auto}
 
 /* ---------- Naples (v2) ---------- */
 /* the whole mounted sketch always fits the first screen; the paper continues to the sides */
-.n-top{position:relative;height:min(100svh,58.85vw);overflow:hidden;background:#e7e2d6 url(img/n2_paper.webp) repeat-x center/auto 100%}
-.nt-box{position:relative;height:100%;max-width:100%;aspect-ratio:2000/1177;margin-inline:auto}
+/* the image is the mounted sketch with its paper extended to both sides, so the texture always runs to the edges of the screen */
+.n-top{position:relative;height:auto;aspect-ratio:16/9;overflow:hidden;background:#e7e2d6}
+.nt-box{position:absolute;top:0;left:calc(50% - 56.25vw * 1.69924);height:100%;aspect-ratio:4000/1177}
 .nt-img{display:block;width:100%;height:100%}
-.n-meta{position:absolute;z-index:2;left:16.9%;right:17.6%;top:12.4%;margin:0;display:flex;justify-content:space-between;font-size:var(--t-md);line-height:1}
+.n-meta{position:absolute;z-index:2;left:33.8%;right:33.95%;bottom:83.3%;margin:0;display:flex;justify-content:space-between;font-size:var(--t-md);line-height:1}
 .n-meta span:first-child{font-weight:500;text-transform:uppercase}
-.n-top .sh{position:absolute;z-index:2;left:0;right:0;top:85.6%;gap:8px}
+.n-top .sh{position:absolute;z-index:2;left:0;right:0;top:85.8%;gap:8px}
 .n2 .blk{gap:clamp(56px,6.25vw,120px)}
 .n2 .sh .eyebrow{text-transform:none;letter-spacing:.04em}
 .n2 .sh .lead{max-width:21em}
@@ -439,8 +440,8 @@ html.lenis,html.lenis body{height:auto}
 .mat{padding-inline:var(--g);display:grid;place-items:center}
 .mat img{width:min(1745px,100%);height:auto}
 /* mounted pieces fit the screen whole: the image keeps its proportions and the paper continues to the sides */
-.bandimg{height:min(100svh,58.85vw);display:grid;justify-items:center;background:#e7e2d6 url(img/n2_paper.webp) repeat-x center/auto 100%;overflow:hidden}
-.bandimg img{display:block;height:100%;width:auto;max-width:100%;aspect-ratio:2000/1177}
+.bandimg{position:relative;aspect-ratio:16/9;background:#e7e2d6;overflow:hidden}
+.bandimg img{position:absolute;top:0;left:calc(50% - 56.25vw * 1.69924);display:block;height:100%;width:auto;max-width:none;aspect-ratio:4000/1177}
 .busts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,.8vw,16px);padding-inline:clamp(16px,5vw,96px)}
 .bp{display:contents}
 .busts .ph{aspect-ratio:268/335;background:#000}
@@ -453,9 +454,9 @@ html.lenis,html.lenis body{height:auto}
 .media.small .ph{aspect-ratio:360/289}
 .gsk{display:block;width:min(770px,39vw);height:auto;margin:clamp(8px,1.5vw,30px) auto 0}
 @media (max-width:760px){
-  .n-top{height:auto;padding-top:88px;background:var(--paper)}
-  .nt-box{display:grid;height:auto;aspect-ratio:auto}
-  .nt-img{height:auto;aspect-ratio:2000/1177}
+  .n-top{height:auto;aspect-ratio:auto;padding-top:88px;background:var(--paper)}
+  .nt-box{position:static;display:flex;flex-direction:column;height:auto;aspect-ratio:auto;overflow:hidden}
+  .nt-img{width:200%;max-width:none;height:auto;margin-left:-50%;aspect-ratio:4000/1177}
   .n-meta,.n-top .sh{position:static}
   .n-meta{order:-1;padding:0 var(--g) 12px;font-size:13px}
   .n-top .sh{padding-top:16px}
@@ -928,7 +929,7 @@ function bindView(){
 
 /* ---------- body text by lines, images by mask ---------- */
 const LINE_SEL = '.sh .eyebrow,.sh .lead,.duo figcaption,.marco .cap,.loose-t,.reveal .txt,.reveal .eyebrow,.split h3,.split p,.bio p,.studio-intro .lead-lg,.studio-intro .eyebrow,.caps2 p,.cap1,.statement,.fig figcaption,.foot .tag,.member figcaption';
-const IMG_SEL = '.ph,.marco .frame,.bandimg img,.mat img,.gsk,.split .inner img,.board img,.hero';
+const IMG_SEL = '.ph,.marco .frame,.bandimg,.mat img,.gsk,.split .inner img,.board img,.hero';
 let blockIO = null;
 const introDone = fn => { const t = () => document.documentElement.classList.contains('intro-on') ? setTimeout(t, 120) : fn(); t(); };
 function lineify(el){
