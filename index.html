@@ -145,7 +145,7 @@ html.intro-on .hero img{animation-play-state:paused}
 .locs button.picked::before{content:'';display:inline-block;width:.45em;height:.45em;border-radius:50%;background:currentColor;margin-right:.5em;vertical-align:.1em}
 .filters .col.open .locs{max-height:240px}
 .grid{row-gap:40px;margin-top:104px;position:relative}
-.cell{display:grid;gap:16px;grid-template-rows:16px auto;grid-row:var(--r);grid-column:var(--c);transition:opacity .45s}
+.cell{display:grid;gap:8px;grid-template-rows:16px auto;grid-row:var(--r);grid-column:var(--c);transition:opacity .45s}
 .cell .lbl{font-size:var(--t-xs);line-height:1;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
 .cell button{display:block;width:100%;aspect-ratio:367/215;overflow:hidden;border-radius:var(--rad)}
 .cell img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.6,.2,1)}
@@ -478,6 +478,11 @@ html.lenis,html.lenis body{height:auto}
 .tail{position:relative}
 .tail>.hold,.nextp>.hold{position:fixed;left:0;right:0;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:60;margin:0 auto;color:#fff;mix-blend-mode:difference}
 .pveil{position:fixed;inset:0;z-index:120;background:var(--paper);pointer-events:none;opacity:0}
+
+/* desktop: the location filters sit in the header row, centred between the logo and the menu */
+@media (min-width:1001px){
+  .plp .locrow{position:absolute;z-index:51;top:calc(24px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);height:18px;align-items:center;flex-wrap:nowrap;column-gap:16px;padding:0;white-space:nowrap}
+}
 </style></head><body>
 
 <header class="nav" aria-label="Main">
@@ -524,14 +529,22 @@ const I = n => `img/${n}`;
 
 /* Stories and their thumbnails, placed on the 5-column PLP grid exactly as in the Figma frame (row, column). */
 const STORIES = [
-  {id:'naples',        n:'01', name:'Naples',        title:'The Mediterranean Villa', hero:I('p_villa.webp'), cells:['00','01'], m:[[0,0],[0,1]]},
-  {id:'palm-beach',    n:'02', name:'Palm Beach',    hero:I('pb_lounge.webp'), cells:['03','04','10'], m:[[0,3],[1,1],[1,0]]},
-  {id:'new-york-city', n:'03', name:'New York City', cells:['12','13','14'], m:[[1,2],[1,3],[2,2]]},
-  {id:'kyoto',         n:'04', name:'Kyoto',         cells:['20','21','22'], m:[[2,0],[2,1],[3,0]]},
-  {id:'ibiza',         n:'05', name:'Ibiza',         cells:['24','30','31'], m:[[2,3],[3,1],[3,2]]},
-  {id:'miami',         n:'06', name:'Miami',         cells:['33','34','40'], m:[[3,3],[4,0],[4,1]]},
-  {id:'galapagos',     n:'07', name:'Galapagos',     cells:['42','43','44'], m:[[4,2],[4,3],[5,2]]},
+  {id:'naples',        n:'01', name:'Naples',        title:'The Mediterranean Villa', hero:I('p_villa.webp'), cells:['00','01','02','03']},
+  {id:'palm-beach',    n:'02', name:'Palm Beach',    hero:I('pb_lounge.webp'), cells:['10','11','12']},
+  {id:'new-york-city', n:'03', name:'New York City', cells:['14','21','22']},
+  {id:'kyoto',         n:'04', name:'Kyoto',         cells:['23','30','31']},
+  {id:'ibiza',         n:'05', name:'Ibiza',         cells:['33','34']},
+  {id:'miami',         n:'06', name:'Miami',         cells:['40']},
+  {id:'cancun',        n:'07', name:'Cancun',        cells:['42','43','44']},
 ];
+/* each image in the Stories grid carries its own project name */
+const CELL_NAMES = {
+  '00':'The Estuary Villa', '01':'The North Star', '02':'Cornelius', '03':'The Matriarch',
+  '10':'The Mansion', '11':'The Lighthouse', '12':'The Yacht Club', '14':'The Machine Age',
+  '21':'The Maple Leaf', '22':'Transitions', '23':'The Spa',
+  '30':'Chambre avec vue', '31':'Mademoiselle Coco', '33':'The Cafecito', '34':'Morris',
+  '40':'The Flowers District', '42':'The Sanctuary', '43':'The Upper World', '44':'The Sacred Fire'
+};
 const byId = Object.fromEntries(STORIES.map(s => [s.id, s]));
 const heroOf = s => s.hero || I(`g${s.cells[0]}.jpg`);
 const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
@@ -570,10 +583,10 @@ function positions(){
   groups.forEach(g => {
     g.cells.forEach((rc, k) => {
       let r, c, mr, mc;
-      if (figma) { r = +rc[0]; c = +rc[1]; [mr, mc] = byId[g.id].m[k]; }
+      if (figma) { r = +rc[0]; c = +rc[1]; const L = r * 5 + c; mr = Math.floor(L / 4); mc = L % 4; }
       else { r = Math.floor(slot / 5); c = slot % 5; mr = Math.floor(slot / 4); mc = slot % 4; }
       slot++;
-      out[rc] = {r:r + 1, c:c + 1, mr:mr + 1, mc:mc + 1, g:g.id, label:k === 0 ? g.label : '', order:slot};
+      out[rc] = {r:r + 1, c:c + 1, mr:mr + 1, mc:mc + 1, g:g.id, label:`“ ${CELL_NAMES[rc]} ”`, order:slot};
     });
     slot++;
   });
@@ -582,7 +595,7 @@ function positions(){
 const gridHTML = () => { const P = positions(); return ALL.map(rc => { const s = storyOf(rc), p = P[rc]; return `
     <div class="cell" data-rc="${rc}" data-story="${s.id}" data-g="${p.g}" style="--r:${p.r};--c:${p.c};--mr:${p.mr};--mc:${p.mc}">
       <span class="lbl">${p.label}</span>
-      <button type="button" data-open="${s.id}" aria-label="Open story ${s.n}, ${s.name}"><img src="${I(`g${rc}.jpg`)}" alt="" decoding="async"></button>
+      <button type="button" data-open="${s.id}" aria-label="${CELL_NAMES[rc]}, story ${s.n}, ${s.name}"><img src="${I(`g${rc}.jpg`)}" alt="" decoding="async"></button>
     </div>`; }).join(''); };
 const filtersHTML = () => `
   <div class="locrow">${STORIES.map(s => `<button type="button" data-pick="${s.id}" aria-pressed="false">${s.name}</button>`).join('')}</div>`;
@@ -921,7 +934,6 @@ function bindView(){
   view.querySelectorAll('.loop').forEach(l => initLoop(l, !!l.closest('#plp')));
   view.querySelectorAll('[data-copy] button').forEach(el => el.tabIndex = -1);
   revealImages();
-  splitTitles();
   revealBlocks();
   lastY = window.scrollY;
   onScroll();
@@ -956,7 +968,6 @@ function revealBlocks(){
   if (blockIO) blockIO.disconnect();
   if (reduce.matches) return;
   const scope = el => !el.closest('.plp,.intro');
-  const texts = [...view.querySelectorAll(LINE_SEL)].filter(scope);
   const imgs = [...view.querySelectorAll(IMG_SEL)].filter(scope);
   blockIO = new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting) return;
@@ -965,7 +976,6 @@ function revealBlocks(){
   }), {rootMargin:'0px 0px 0px 0px'});
   imgs.forEach(el => { el.classList.add('rv'); blockIO.observe(el); });
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
-    texts.forEach(el => { if (el.isConnected) { lineify(el); blockIO.observe(el); } });
     // word-by-word reveals point at the rebuilt spans
     quoteEls = [...view.querySelectorAll('[data-quote]')].map(el => ({el, words:[...el.querySelectorAll('.w')], lit:+(el.dataset.lit || .45)}));
     onScroll();
